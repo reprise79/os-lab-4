@@ -124,10 +124,14 @@ void clean_logs(const char* filename, long max_age_seconds) {
     sprintf(temp_filename, "%s.tmp", filename);
 
     FILE* src = fopen(filename, "r");
+    if (!src) return;
     FILE* dst = fopen(temp_filename, "w");
-
+    if (!dst) { 
+        fclose(src); 
+        return; 
+    }
     time_t now = time(NULL);
-    char line[128];
+    char line[256];
 
     while(fgets(line, sizeof(line), src)) {
         int Y, M, D, h, m, s;
@@ -192,7 +196,7 @@ int main(int argc, char* argv[]) {
 
     char str_buf[64];
     int pos = 0;
-    time_t last_cleanup = 0;
+    time_t last_cleanup = time(NULL);
 
     while(1) {
         char chunk[1];
